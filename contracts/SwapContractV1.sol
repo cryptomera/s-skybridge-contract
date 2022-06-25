@@ -18,7 +18,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 //import "hardhat/console.sol"; //console.log()
 
-contract SwapContract is Ownable, ReentrancyGuard, ISwapContract {
+contract SwapContractV1 is Ownable, ReentrancyGuard, ISwapContract {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -30,16 +30,16 @@ contract SwapContract is Ownable, ReentrancyGuard, ISwapContract {
         uint256 Timestamp; // block timestamp that is set by EVM
     }
 
-    IBurnableToken public immutable lpToken;
-    IParams public immutable ip;
-    ISwapRewards public immutable sw;
+    IBurnableToken public  lpToken;
+    IParams public  ip;
+    ISwapRewards public  sw;
 
     /** Skybridge */
     mapping(address => bool) public whitelist;
-    address public immutable BTCT_ADDR;
-    address public immutable sbBTCPool;
-    uint256 private immutable convertScale;
-    uint256 private immutable lpDivisor;
+    address public  BTCT_ADDR;
+    address public sbBTCPool;
+    uint256 private convertScale;
+    uint256 private lpDivisor;
 
     mapping(address => uint256) private floatAmountOf;
     mapping(bytes32 => bool) private used; //used TX
@@ -58,12 +58,13 @@ contract SwapContract is Ownable, ReentrancyGuard, ISwapContract {
     //keep track of ether in tokens[][]
     address constant ETHER = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address public paraswapAddress; 
-    address public immutable wETH;
+    address public wETH;
     //Data and indexes for pending swap objects
     mapping(uint256 => spPendingTx) public spPendingTXs; //index => pending TX object
     uint256 public swapCount;
     uint256 public oldestActiveIndex;
     uint256 public limitBTCForSPFlow2;
+    bool isInitialized;
 
     /**
      * Events
@@ -124,7 +125,7 @@ contract SwapContract is Ownable, ReentrancyGuard, ISwapContract {
         require(getCurrentPriceLP() >= beforePrice, "Invalid LPT price");
     }
 
-    constructor(
+    function initialize(
         address _lpToken,
         address _btct,
         address _wETH,
@@ -132,7 +133,8 @@ contract SwapContract is Ownable, ReentrancyGuard, ISwapContract {
         address _params,
         address _swapRewards,
         uint256 _existingBTCFloat
-    ) {
+    ) public onlyOwner {
+        require(!isInitialized, "You already initialized!");
         //init latest removed index and swapCount
         oldestActiveIndex = 0;
         swapCount = 0;
@@ -159,6 +161,7 @@ contract SwapContract is Ownable, ReentrancyGuard, ISwapContract {
         whitelist[_lpToken] = true;
         whitelist[address(0)] = true;
         floatAmountOf[address(0)] = _existingBTCFloat;
+        isInitialized = true;
     }
 
     /**
