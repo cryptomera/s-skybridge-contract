@@ -11,6 +11,7 @@ require("@nomiclabs/hardhat-truffle5");
 require("hardhat-watcher");
 require('@symblox/hardhat-abi-gen');
 require('@nomiclabs/hardhat-etherscan');
+require('@openzeppelin/hardhat-upgrades');
 
 //const mnemonic = process.env.SEED
 
