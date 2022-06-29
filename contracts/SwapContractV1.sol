@@ -1,26 +1,25 @@
 // SPDX-License-Identifier: AGPL-3.0
-pragma solidity >=0.6.0 <=0.8.9;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
+// pragma experimental ABIEncoderV2;
 import "./interfaces/IWETH.sol";
 import "./interfaces/IBurnableToken.sol";
 import "./interfaces/IERC20.sol";
-import "./interfaces/ISwapContract.sol";
+// import "./interfaces/ISwapContract.sol";
 import "./interfaces/ISwapRewards.sol";
 import "./interfaces/IParams.sol";
 import "./interfaces/IAugustusSwapper.sol";
 import "./interfaces/ITokenTransferProxy.sol";
 import "./interfaces/IParaswap.sol";
 import "./interfaces/lib/Utils.sol";
-import "./interfaces/lib/SafeERC20.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
+// import "./interfaces/lib/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+// import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 //import "hardhat/console.sol"; //console.log()
 
-contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
+contract SwapContractV1 {
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
 
     struct spPendingTx {
         bytes32 SwapID; //swap hash for identification of this swap.
@@ -30,16 +29,16 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         uint256 Timestamp; // block timestamp that is set by EVM
     }
 
-    IBurnableToken public lpToken;
-    IParams public ip;
-    ISwapRewards public sw;
+    IBurnableToken public  lpToken;
+    IParams public  ip;
+    ISwapRewards public  sw;
 
     /** Skybridge */
     mapping(address => bool) public whitelist;
-    address public BTCT_ADDR;
-    address public sbBTCPool;
-    uint256 private convertScale;
-    uint256 private lpDivisor;
+    address public  BTCT_ADDR;
+    address public  sbBTCPool;
+    uint256 private  convertScale;
+    uint256 private  lpDivisor;
 
     mapping(address => uint256) private floatAmountOf;
     mapping(bytes32 => bool) private used; //used TX
@@ -57,16 +56,15 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     mapping(address => mapping(address => uint256)) public tokens;
     //keep track of ether in tokens[][]
     address constant ETHER = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    address public paraswapAddress;
-    address public wETH;
+    address public paraswapAddress; 
+    address public  wETH;
     //Data and indexes for pending swap objects
     mapping(uint256 => spPendingTx) public spPendingTXs; //index => pending TX object
     uint256 public swapCount;
     uint256 public oldestActiveIndex;
     uint256 public limitBTCForSPFlow2;
-    bool isInitialized;
-
     address public owner;
+    bool private initialized;
 
     /**
      * Events
@@ -119,15 +117,15 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         uint256 Timestamp
     );
 
-    event DistributeNodeRewards(uint256 rewardLPTsForNodes);
-
-    modifier onlyOwner() {
+    event DistributeNodeRewards(uint256 rewardLPTsForNodes); 
+    
+    modifier onlyOwner () {
         require(msg.sender == owner, "you are not owner");
         _;
     }
 
     modifier priceCheck() {
-        uint256 beforePrice = getCurrentPriceLP();
+        uint256 beforePrice = getCurrentPriceLP();        
         _;
         require(getCurrentPriceLP() >= beforePrice, "Invalid LPT price");
     }
@@ -140,11 +138,11 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         address _params,
         address _swapRewards,
         uint256 _existingBTCFloat
-    ) public initializer onlyOwner {
-        require(!isInitialized, "You already initialized!");
+    ) public {
+        require(!initialized, "already initialized");
         //init latest removed index and swapCount
-        oldestActiveIndex = 0;
-        swapCount = 0;
+        // oldestActiveIndex = 0;
+        // swapCount = 0;
         //set address for wETH
         wETH = _wETH;
         //set address for sbBTCpool
@@ -168,8 +166,8 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         whitelist[_lpToken] = true;
         whitelist[address(0)] = true;
         floatAmountOf[address(0)] = _existingBTCFloat;
-        isInitialized = true;
         owner = msg.sender;
+        initialized = true;
     }
 
     /**
@@ -189,7 +187,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         uint256 _totalSwapped,
         uint256 _rewardsAmount,
         bytes32[] memory _redeemedFloatTxIds
-    ) external override onlyOwner returns (bool) {
+    ) external  onlyOwner returns (bool) {
         require(whitelist[_destToken], "14"); //_destToken is not whitelisted
         require(
             _destToken != address(0),
@@ -200,9 +198,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
             sw.pullRewards(_destToken, _to, _totalSwapped);
             _swap(address(0), BTCT_ADDR, _totalSwapped);
         } else {
-            _feesToken = (_destToken == address(lpToken))
-                ? address(lpToken)
-                : BTCT_ADDR;
+            _feesToken = (_destToken == address(lpToken)) ? address(lpToken) : BTCT_ADDR;
         }
         _rewardsCollection(_feesToken, _rewardsAmount);
         _addUsedTxs(_redeemedFloatTxIds);
@@ -222,7 +218,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         uint256 _totalSwapped,
         uint256 _rewardsAmount,
         bytes32[] memory _redeemedFloatTxIds
-    ) external override onlyOwner returns (bool) {
+    ) external  onlyOwner returns (bool) {
         require(whitelist[_destToken], "_destToken is not whitelisted");
         require(
             _destToken != address(0),
@@ -232,9 +228,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         if (_totalSwapped > 0) {
             _swap(address(0), BTCT_ADDR, _totalSwapped);
         } else {
-            _feesToken = (_destToken == address(lpToken))
-                ? address(lpToken)
-                : BTCT_ADDR;
+            _feesToken = (_destToken == address(lpToken)) ? address(lpToken) : BTCT_ADDR;
         }
         _rewardsCollection(_feesToken, _rewardsAmount);
         _addUsedTxs(_redeemedFloatTxIds);
@@ -248,18 +242,18 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         return true;
     }
 
+    
+
     /// @dev collectSwapFeesForBTC collects fees in the case of swap BTCT to BTC.
     /// @param _incomingAmount The spent amount. (BTCT)
-    /// @param _minerFee The miner fees of BTC transaction.
     /// @param _rewardsAmount The fees that should be paid.
     function collectSwapFeesForBTC(
         uint256 _incomingAmount,
-        uint256 _minerFee,
         uint256 _rewardsAmount,
         address[] memory _spenders,
         uint256[] memory _swapAmounts,
         bool _isUpdatelimitBTCForSPFlow2
-    ) external override onlyOwner returns (bool) {
+    ) external  onlyOwner returns (bool) {
         address _feesToken = BTCT_ADDR;
         if (_incomingAmount > 0) {
             uint256 swapAmount = _incomingAmount.sub(_rewardsAmount);
@@ -286,7 +280,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         address _token,
         bytes32 _addressesAndAmountOfFloat,
         bytes32 _txid
-    ) external override onlyOwner priceCheck returns (bool) {
+    ) external  onlyOwner priceCheck returns (bool) {
         require(whitelist[_token], "16"); //_token is invalid
         require(
             _issueLPTokensForFloat(_token, _addressesAndAmountOfFloat, _txid)
@@ -304,7 +298,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         bytes32 _addressesAndAmountOfLPtoken,
         uint256 _minerFee,
         bytes32 _txid
-    ) external override onlyOwner priceCheck returns (bool) {
+    ) external  onlyOwner priceCheck returns (bool) {
         require(whitelist[_token], "16"); //_token is invalid
         require(
             _burnLPTokensForFloat(
@@ -380,7 +374,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     /// @param _data A struct containing the data for simpleSwap, from the paraswap Utils lib.
     function spFlow1SimpleSwap(Utils.SimpleData calldata _data)
         external
-        nonReentrant
+        
     {
         require(_data.beneficiary == msg.sender, "beneficiary != msg.sender");
 
@@ -388,12 +382,15 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
             tokens[_data.fromToken][_data.beneficiary] >= _data.fromAmount,
             "Balance insufficient"
         );
-        require(_data.fromToken == BTCT_ADDR, "fromToken != BTCT_ADDR");
+        require(
+            _data.fromToken == BTCT_ADDR,
+            "fromToken != BTCT_ADDR"
+        );
 
         tokens[_data.fromToken][_data.beneficiary] = tokens[_data.fromToken][
             _data.beneficiary
         ].sub(_data.fromAmount);
-
+        
         _doSimpleSwap(_data); //no received amount, tokens to go user's wallet
     }
 
@@ -411,7 +408,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         uint256 _amountIn,
         uint256 _amountOutMin,
         address[] calldata _path
-    ) external nonReentrant returns (uint256 receivedAmount) {
+    ) external  returns (uint256 receivedAmount) {
         address fromToken = _path[0];
         address endToken = _path[_path.length - 1];
 
@@ -445,7 +442,10 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
             preSwapBalance
         );
 
-        require(receivedAmount >= _amountOutMin, "Received < minimum");
+        require(
+            receivedAmount >= _amountOutMin,
+            "Received < minimum"
+        );
 
         tokens[endToken][msg.sender] = tokens[endToken][msg.sender].add(
             receivedAmount
@@ -469,7 +469,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         uint256 _amountIn,
         uint256 _amountOutMin,
         address[] calldata _path
-    ) external nonReentrant returns (uint256 receivedAmount) {
+    ) external  returns (uint256 receivedAmount) {
         address fromToken = _path[0];
         address endToken = _path[_path.length - 1];
 
@@ -503,7 +503,10 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
             preSwapBalance
         );
 
-        require(receivedAmount >= _amountOutMin, "Received < minimum");
+        require(
+            receivedAmount >= _amountOutMin,
+            "Received < minimum"
+        );
         require(
             receivedAmount >= ip.minimumSwapAmountForWBTC(),
             "receivedAmount < minimumSwapAmountForWBTC"
@@ -520,7 +523,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     function spFlow2SimpleSwap(
         string calldata _destinationAddressForBTC,
         Utils.SimpleData calldata _data
-    ) external nonReentrant returns (uint256 receivedAmount) {
+    ) external  returns (uint256 receivedAmount) {
         //bytes32 destBytes32 = _stringToBytes32(destinationAddressForBTC);
         //console.log("Converted to bytes32 and back to String:",_bytes32ToString(destBytes32));
 
@@ -578,7 +581,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
 
         //address proxy = IAugustusSwapper(paraswapAddress).getTokenTransferProxy();
 
-        IERC20(_path[0]).safeIncreaseAllowance(
+        IERC20(_path[0]).increaseAllowance(
             IAugustusSwapper(paraswapAddress).getTokenTransferProxy(),
             _amountIn
         );
@@ -605,8 +608,8 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
 
         //address proxy = IAugustusSwapper(paraswapAddress).getTokenTransferProxy();
 
-        IERC20(_path[0]).safeIncreaseAllowance(
-            IAugustusSwapper(paraswapAddress).getTokenTransferProxy(),
+        IERC20(_path[0]).increaseAllowance(
+            IAugustusSwapper(paraswapAddress).getTokenTransferProxy(), 
             _amountIn
         );
 
@@ -622,8 +625,8 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     function _doSimpleSwap(Utils.SimpleData calldata _data) internal {
         //address proxy = IAugustusSwapper(paraswapAddress).getTokenTransferProxy();
 
-        IERC20(_data.fromToken).safeIncreaseAllowance(
-            IAugustusSwapper(paraswapAddress).getTokenTransferProxy(),
+        IERC20(_data.fromToken).increaseAllowance(
+            IAugustusSwapper(paraswapAddress).getTokenTransferProxy(), 
             _data.fromAmount
         );
 
@@ -715,7 +718,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     function spDeposit(address _token, uint256 _amount)
         external
         payable
-        nonReentrant
+        
     {
         if (msg.value == 0) {
             require(_token != ETHER);
@@ -723,11 +726,9 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
 
             uint256 initBalance = IERC20(_token).balanceOf(address(this));
 
-            IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
+            IERC20(_token).transferFrom(msg.sender, address(this), _amount);
 
-            uint256 received = IERC20(_token).balanceOf(address(this)).sub(
-                initBalance
-            );
+            uint256 received = IERC20(_token).balanceOf(address(this)).sub(initBalance);
 
             tokens[_token][msg.sender] = tokens[_token][msg.sender].add(
                 received
@@ -759,7 +760,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
 
     /// @dev redeemEther for skypools - swap wETH for ether and send to user's wallet
     /// @param _amount amount to withdraw
-    function redeemEther(uint256 _amount) external nonReentrant {
+    function redeemEther(uint256 _amount) external  {
         require(tokens[wETH][msg.sender] >= _amount);
         IWETH(wETH).withdraw(_amount);
         tokens[wETH][msg.sender] = tokens[wETH][msg.sender].sub(_amount);
@@ -789,7 +790,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     /// @param _amount The amount to withdraw - call with BTC decimals (8) for BTC
     function redeemERC20Token(address _token, uint256 _amount)
         external
-        nonReentrant
+        
     {
         require(tokens[_token][msg.sender] >= _amount, "Insufficient Balance");
         tokens[_token][msg.sender] = tokens[_token][msg.sender].sub(_amount);
@@ -813,7 +814,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     /// @param _txid The txid which is for recording.
     function recordUTXOSweepMinerFee(uint256 _minerFee, bytes32 _txid)
         public
-        override
+        
         onlyOwner
         returns (bool)
     {
@@ -838,7 +839,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         bool[] memory _isRemoved,
         uint8 _churnedInCount,
         uint8 _tssThreshold
-    ) external override onlyOwner returns (bool) {
+    ) external  onlyOwner returns (bool) {
         require(
             _tssThreshold >= tssThreshold && _tssThreshold <= 2**8 - 1,
             "01" //"_tssThreshold should be >= tssThreshold"
@@ -907,7 +908,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
 
     /// @dev isTxUsed sends rewards for Nodes.
     /// @param _txid The txid which is for recording.
-    function isTxUsed(bytes32 _txid) public view override returns (bool) {
+    function isTxUsed(bytes32 _txid) public view  returns (bool) {
         return used[_txid];
     }
 
@@ -915,7 +916,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     function getCurrentPriceLP()
         public
         view
-        override
+        
         returns (uint256 nowPrice)
     {
         (uint256 reserveA, uint256 reserveB) = getFloatReserve(
@@ -936,14 +937,14 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     function getFloatReserve(address _tokenA, address _tokenB)
         public
         view
-        override
+        
         returns (uint256 reserveA, uint256 reserveB)
     {
         (reserveA, reserveB) = (floatAmountOf[_tokenA], floatAmountOf[_tokenB]);
     }
 
     /// @dev getActiveNodes returns active nodes list
-    function getActiveNodes() public view override returns (address[] memory) {
+    function getActiveNodes() public view  returns (address[] memory) {
         uint256 count = 0;
         address[] memory _nodes = new address[](activeNodeCount);
         for (uint256 i = 0; i < nodeAddrs.length; i++) {
@@ -956,7 +957,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
     }
 
     /// @dev isNodeSake returns true if the node is churned in
-    function isNodeStake(address _user) public view override returns (bool) {
+    function isNodeStake(address _user) public view  returns (bool) {
         if (nodes[_user] == uint8(1)) {
             return true;
         }
@@ -1113,7 +1114,7 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
         if (_token == BTCT_ADDR) {
             _amount = _amount.mul(convertScale);
         }
-        IERC20(_token).safeTransfer(_to, _amount);
+        IERC20(_token).transfer(_to, _amount);
     }
 
     /// @dev _rewardsCollection collects tx rewards.
@@ -1197,5 +1198,9 @@ contract SwapContractV1 is ReentrancyGuard, ISwapContract, Initializable {
             address(uint160(uint256(_data))),
             uint256(uint96(bytes12(_data)))
         );
+    }
+
+    function transferOwnership(address _newOwner) public onlyOwner {
+        owner = _newOwner;
     }
 }
