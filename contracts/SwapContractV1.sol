@@ -141,8 +141,8 @@ contract SwapContractV1 {
     ) public {
         require(!initialized, "already initialized");
         //init latest removed index and swapCount
-        // oldestActiveIndex = 0;
-        // swapCount = 0;
+        oldestActiveIndex = 0;
+        swapCount = 0;
         //set address for wETH
         wETH = _wETH;
         //set address for sbBTCpool
