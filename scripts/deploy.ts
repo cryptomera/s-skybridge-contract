@@ -3,23 +3,53 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const [owner, ...otherAccounts] = await ethers.getSigners();
+  // constants that should be defined
+  const rewardTokenAddress = "";
+  const pricePerBTC = 0;
+  const sbBTCPoolAddress = "";
+  const BTCT_address = "";
+  const WETH_address = "";
+  const existingBTCFloat = 0;
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const LPToken = await ethers.getContractFactory("LPToken");
+  const lpToken = await LPToken.deploy(18);
+  await lpToken.deployed();
 
-  await greeter.deployed();
+  console.log("LPToken deployed to:", lpToken.address);
 
-  console.log("Greeter deployed to:", greeter.address);
+  const Params = await ethers.getContractFactory("Params");
+  const params = await Params.deploy();
+  await params.deployed();
+
+  console.log("Params deployed to:", params.address);
+
+  const SwapRewards = await ethers.getContractFactory("SwapRewards");
+  const swapRewards = await SwapRewards.deploy(
+    owner.address,
+    rewardTokenAddress,
+    pricePerBTC
+  )
+  await swapRewards.deployed();
+
+  console.log("SwapRewards deployed to:", swapRewards.address);
+
+  const SwapV1 = await ethers.getContractFactory("SwapContractV1");
+  const swapV1 = await upgrades.deployProxy(SwapV1, [
+    lpToken.address,
+    BTCT_address,
+    WETH_address,
+    sbBTCPoolAddress,
+    params.address,
+    swapRewards.address,
+    existingBTCFloat
+  ], {initializer: 'intialize'});
+
+  console.log("SwapContractProxy deployed to:", swapV1.address);
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

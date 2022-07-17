@@ -12,7 +12,7 @@
     },
     {
       "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
-      "txHash": "0x3aab34f2df33d1d55066941c3b99b36aa88615b99934504b1e0ddab2bfd3b087",
+      "txHash": "0xfc0c95247c0f398bb8bed4b83a6efe932306dd752cdd22d44b16a95d20f88de6",
       "kind": "transparent"
     }
   ],
@@ -621,16 +621,16 @@
         }
       }
     },
-    "6dee010aef81027df2e6daaa898b9753100a3537ece897dc16bf8ed7777773f4": {
+    "23f0f6ae9612f4c0a7ff5c2f91575251ba78cd330291da9963009098833a86b9": {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
-      "txHash": "0x64d8485c858c15584e3c6bc8953df42662b409e1587af517fe4f542f45069d76",
+      "txHash": "0x4cde462f42c2afdceb1a745c6a97186a2d519d3acbdd1bb98875e2e68830071e",
       "layout": {
         "storage": [
           {
             "label": "lpToken",
             "offset": 0,
             "slot": "0",
-            "type": "t_contract(IBurnableToken)5575",
+            "type": "t_contract(IBurnableToken)5576",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:32"
           },
@@ -638,7 +638,7 @@
             "label": "ip",
             "offset": 0,
             "slot": "1",
-            "type": "t_contract(IParams)5759",
+            "type": "t_contract(IParams)5760",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:33"
           },
@@ -646,7 +646,7 @@
             "label": "sw",
             "offset": 0,
             "slot": "2",
-            "type": "t_contract(ISwapRewards)6207",
+            "type": "t_contract(ISwapRewards)6208",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:34"
           },
@@ -774,7 +774,7 @@
             "label": "spPendingTXs",
             "offset": 0,
             "slot": "16",
-            "type": "t_mapping(t_uint256,t_struct(spPendingTx)1940_storage)",
+            "type": "t_mapping(t_uint256,t_struct(spPendingTx)1941_storage)",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:62"
           },
@@ -836,15 +836,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IBurnableToken)5575": {
+          "t_contract(IBurnableToken)5576": {
             "label": "contract IBurnableToken",
             "numberOfBytes": "20"
           },
-          "t_contract(IParams)5759": {
+          "t_contract(IParams)5760": {
             "label": "contract IParams",
             "numberOfBytes": "20"
           },
-          "t_contract(ISwapRewards)6207": {
+          "t_contract(ISwapRewards)6208": {
             "label": "contract ISwapRewards",
             "numberOfBytes": "20"
           },
@@ -868,7 +868,7 @@
             "label": "mapping(bytes32 => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(spPendingTx)1940_storage)": {
+          "t_mapping(t_uint256,t_struct(spPendingTx)1941_storage)": {
             "label": "mapping(uint256 => struct SwapContractV1.spPendingTx)",
             "numberOfBytes": "32"
           },
@@ -876,7 +876,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(spPendingTx)1940_storage": {
+          "t_struct(spPendingTx)1941_storage": {
             "label": "struct SwapContractV1.spPendingTx",
             "members": [
               {
@@ -923,16 +923,16 @@
         }
       }
     },
-    "573f487a159cb6e3e5307b3dc31cbf4660b0fa685f12e396c09dac868ae40aa6": {
+    "a4baa06217a3aeaf4761f243f1c1c0ceb4d0ee68edd38d2ca824feea7e952932": {
       "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
-      "txHash": "0xf3f0154429800e5fcd6f9b3e73ad96f0496613594fd517f348142fa6cd4a1253",
+      "txHash": "0x99d53f0342e8f999f6cfd850f968155b9efd98d658c8ec310d6164447183be03",
       "layout": {
         "storage": [
           {
             "label": "lpToken",
             "offset": 0,
             "slot": "0",
-            "type": "t_contract(IBurnableToken)5575",
+            "type": "t_contract(IBurnableToken)5576",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:32"
           },
@@ -940,7 +940,7 @@
             "label": "ip",
             "offset": 0,
             "slot": "1",
-            "type": "t_contract(IParams)5759",
+            "type": "t_contract(IParams)5760",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:33"
           },
@@ -948,7 +948,7 @@
             "label": "sw",
             "offset": 0,
             "slot": "2",
-            "type": "t_contract(ISwapRewards)6207",
+            "type": "t_contract(ISwapRewards)6208",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:34"
           },
@@ -1076,7 +1076,7 @@
             "label": "spPendingTXs",
             "offset": 0,
             "slot": "16",
-            "type": "t_mapping(t_uint256,t_struct(spPendingTx)1940_storage)",
+            "type": "t_mapping(t_uint256,t_struct(spPendingTx)1941_storage)",
             "contract": "SwapContractV1",
             "src": "contracts/SwapContractV1.sol:62"
           },
@@ -1138,15 +1138,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IBurnableToken)5575": {
+          "t_contract(IBurnableToken)5576": {
             "label": "contract IBurnableToken",
             "numberOfBytes": "20"
           },
-          "t_contract(IParams)5759": {
+          "t_contract(IParams)5760": {
             "label": "contract IParams",
             "numberOfBytes": "20"
           },
-          "t_contract(ISwapRewards)6207": {
+          "t_contract(ISwapRewards)6208": {
             "label": "contract ISwapRewards",
             "numberOfBytes": "20"
           },
@@ -1170,7 +1170,7 @@
             "label": "mapping(bytes32 => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(spPendingTx)1940_storage)": {
+          "t_mapping(t_uint256,t_struct(spPendingTx)1941_storage)": {
             "label": "mapping(uint256 => struct SwapContractV1.spPendingTx)",
             "numberOfBytes": "32"
           },
@@ -1178,7 +1178,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(spPendingTx)1940_storage": {
+          "t_struct(spPendingTx)1941_storage": {
             "label": "struct SwapContractV1.spPendingTx",
             "members": [
               {
