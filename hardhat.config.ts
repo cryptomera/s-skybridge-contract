@@ -7,6 +7,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "@openzeppelin/hardhat-upgrades";
+import "@symblox/hardhat-abi-gen";
 
 dotenv.config();
 
@@ -44,7 +45,7 @@ const config: HardhatUserConfig = {
           },
         },
       }
-    ]
+    ],
   },
   networks: {
     ropsten: {
@@ -56,7 +57,18 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
       gas: 21000000,
       gasPrice: 80000000000
-    }
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC !== undefined ? process.env.MNEMONIC : '',
+        path: "m/44'/60'/0'/0",
+        initialIndex: 1,
+        count: 10
+      },
+      gas: 21000000,
+      gasPrice: 80000000000
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -65,6 +77,13 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
+  abiExporter: {
+    path: './abi',
+    clear: false,
+    flat: true,
+    spacing: 2
+  },
 };
+
 
 export default config;
